@@ -1,3 +1,5 @@
+This version has additional functionality to use along with [my build of scrcpy](https://github.com/Lurker00/scrcpy). More information to come...
+
 ADBKeyBoard 
 ===========
 
