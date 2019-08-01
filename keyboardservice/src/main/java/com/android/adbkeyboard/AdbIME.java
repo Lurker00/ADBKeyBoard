@@ -19,9 +19,11 @@ public class AdbIME extends InputMethodService {
     private String IME_MESSAGE_B64 = "ADB_INPUT_B64";
     private BroadcastReceiver mReceiver = null;
 
+    private static final String TAG = "AdbIME";
+
     @Override 
     public View onCreateInputView() {
-    	View mInputView = getLayoutInflater().inflate(R.layout.view, null);
+        View mInputView = getLayoutInflater().inflate(R.layout.view, null);
 
         if (mReceiver == null) {
         	IntentFilter filter = new IntentFilter(IME_MESSAGE);
@@ -33,15 +35,18 @@ public class AdbIME extends InputMethodService {
         	registerReceiver(mReceiver, filter);
         }
 
-        return mInputView; 
-    } 
-    
+        Log.i(TAG, "AdbIME onCreateInputView()");
+
+        return mInputView;
+    }
+
     public void onDestroy() {
     	if (mReceiver != null)
     		unregisterReceiver(mReceiver);
-    	super.onDestroy();    	
+    	super.onDestroy();
+    	Log.i(TAG, "AdbIME onDestroy()");
     }
-    
+
     class AdbReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -52,6 +57,7 @@ public class AdbIME extends InputMethodService {
 					if (ic != null)
 						ic.commitText(msg, 1);
 				}
+				return;
 			}
 
 			if (intent.getAction().equals(IME_MESSAGE_B64)) {
@@ -70,34 +76,38 @@ public class AdbIME extends InputMethodService {
 					if (ic != null)
 						ic.commitText(msg, 1);
 				}
+				return;
 			}
 
 			if (intent.getAction().equals(IME_CHARS)) {
-				int[] chars = intent.getIntArrayExtra("chars");				
-				if (chars != null) {					
+				int[] chars = intent.getIntArrayExtra("chars");
+				if (chars != null) {
 					String msg = new String(chars, 0, chars.length);
 					InputConnection ic = getCurrentInputConnection();
 					if (ic != null)
 						ic.commitText(msg, 1);
 				}
+				return;
 			}
-			
-			if (intent.getAction().equals(IME_KEYCODE)) {				
-				int code = intent.getIntExtra("code", -1);				
+
+			if (intent.getAction().equals(IME_KEYCODE)) {
+				int code = intent.getIntExtra("code", -1);
 				if (code != -1) {
 					InputConnection ic = getCurrentInputConnection();
 					if (ic != null)
 						ic.sendKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, code));
 				}
+				return;
 			}
-			
-			if (intent.getAction().equals(IME_EDITORCODE)) {				
-				int code = intent.getIntExtra("code", -1);				
+
+			if (intent.getAction().equals(IME_EDITORCODE)) {
+				int code = intent.getIntExtra("code", -1);
 				if (code != -1) {
 					InputConnection ic = getCurrentInputConnection();
 					if (ic != null)
 						ic.performEditorAction(code);
 				}
+				return;
 			}
 		}
     }
